@@ -77,24 +77,27 @@
                 </div>
 
                 <!-- ✅ RESULTS - Shows inline below form -->
-                <div id="resultsSection" class="results-section card shadow">
-                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bi bi-check-circle"></i> 
-                            Search Complete! <span id="resultsCount">-</span> results found
-                        </h5>
-                        <div>
-                            <a id="downloadExcel" class="btn btn-success me-2" target="_blank">
-                                <i class="bi bi-file-earmark-excel"></i> Excel
-                            </a>
-                            <a id="downloadCsv" class="btn btn-outline-light" target="_blank">
-                                <i class="bi bi-filetype-csv"></i> CSV
-                            </a>
-                            <button class="btn btn-outline-light" onclick="resetSearch()">
-                                <i class="bi bi-arrow-clockwise"></i> New Search
-                            </button>
-                        </div>
-                    </div>
+               <div id="resultsSection" class="results-section card shadow">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-check-circle"></i> 
+            Search Complete! <span id="resultsCount">-</span> results found
+        </h5>
+        <div>
+            <button id="dummyEmailBtn" class="btn btn-warning me-2" style="display: none;">
+                <i class="bi bi-envelope"></i> Dummy Email Test
+            </button>
+            <a id="downloadExcel" class="btn btn-success me-2" target="_blank">
+                <i class="bi bi-file-earmark-excel"></i> Excel
+            </a>
+            <a id="downloadCsv" class="btn btn-outline-light" target="_blank">
+                <i class="bi bi-filetype-csv"></i> CSV
+            </a>
+            <button class="btn btn-outline-light" onclick="resetSearch()">
+                <i class="bi bi-arrow-clockwise"></i> New Search
+            </button>
+        </div>
+    </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-sm mb-0">
@@ -154,20 +157,57 @@
                     throw new Error(JSON.stringify(data.errors || data.error));
                 }
             } catch (error) {
-                console.error('Search error:', error);
+                console.error('Search error:', error); 
                 document.getElementById('consoleOutput').innerHTML += 
                     `<div class="text-danger">❌ Error: ${error.message}</div>`;
                 alert('Search failed. Check console above.');
             } finally {
                 btn.disabled = false;
                 document.getElementById('btnText').innerHTML = originalText;
-            }
+            }   
         });
-        
+        async function sendDummyEmail() {
+            const btn = document.getElementById('dummyEmailBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+            
+            try {
+                const response = await fetch('/search/dummy-email/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({test: true})
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    document.getElementById('consoleOutput').innerHTML += 
+                        '<div class="text-success mt-2">✅ Dummy email test sent successfully!</div>';
+                    alert('✅ Dummy email sent to test list!');
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Dummy email error:', error);
+                document.getElementById('consoleOutput').innerHTML += 
+                    `<div class="text-danger mt-2">❌ Dummy email failed: ${error.message}</div>`;
+                alert('❌ Dummy email test failed. Check console.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-envelope"></i> Dummy Email Test';
+            }
+        }
+
         function populateResults(data) {
             document.getElementById('resultsCount').textContent = `${data.results_count} results`;
             document.getElementById('downloadExcel').href = data.excel_url;
             document.getElementById('downloadCsv').href = data.csv_url;
+            document.getElementById('dummyEmailBtn').style.display = 'inline-block'; 
+            document.getElementById('dummyEmailBtn').onclick = sendDummyEmail;
+
             
             const tbody = document.getElementById('previewTableBody');
             tbody.innerHTML = '';
@@ -192,9 +232,7 @@
             document.getElementById('searchBtn').disabled = false;
             document.getElementById('btnText').innerHTML = 'Start Search';
         }
-        
-        // 👈 Add console logging from backend via data attributes or localStorage if needed
-        // Form always visible, results appear/disappear below it
+
     </script>
 </body>
 </html>

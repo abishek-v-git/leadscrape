@@ -120,7 +120,7 @@ def search_contacts_sync(search_params):
     
     # Return preview WITHOUT IDs too
     preview_data = []
-    for row in results[:10]:
+    for row in results:
         clean_row = {k: v for k, v in row.items() if k not in ['Contact_ID', 'Company_ID']}
         preview_data.append(clean_row)
     

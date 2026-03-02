@@ -7,5 +7,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/', include('search_app.urls')),
-    path('', include('search_app.urls')),  # 👈 ADD THIS LINE - root redirect
+    path('', include('search_app.urls')),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
