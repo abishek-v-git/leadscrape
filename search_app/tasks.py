@@ -102,9 +102,21 @@ def search_contacts_sync(search_params):
     print(f"📊 Total results collected: {len(results)}")
     
     # Generate files WITHOUT ID columns
-    file_id = str(uuid.uuid4())[:8]
-    csv_path = f"media/downloads/{file_id}_contacts.csv"
-    excel_path = f"media/downloads/{file_id}_contacts.xlsx"
+    download_dir = "media/downloads"
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+    else:
+        # Clear existing files in the media folder to keep only the one recent set
+        for f in os.listdir(download_dir):
+            file_path = os.path.join(download_dir, f)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"⚠️ Could not delete old file {f}: {e}")
+
+    csv_path = f"{download_dir}/contacts.csv"
+    excel_path = f"{download_dir}/contacts.xlsx"
     
     print("💾 Saving CSV file...")
     df = pd.DataFrame(results)
@@ -112,11 +124,11 @@ def search_contacts_sync(search_params):
     # 👇 REMOVE THESE COLUMNS before saving
     df_clean = df.drop(columns=['Contact_ID', 'Company_ID'], errors='ignore')
     df_clean.to_csv(csv_path, index=False)
-    print("✅ CSV saved (without IDs)")
+    print("✅ CSV saved")
     
     print("💾 Saving Excel file...")
     df_clean.to_excel(excel_path, index=False)
-    print("✅ Excel saved (without IDs)")
+    print("✅ Excel saved")
     
     # Return preview WITHOUT IDs too
     preview_data = []
@@ -126,14 +138,13 @@ def search_contacts_sync(search_params):
     
     result = {
         'results_count': len(results),
-        'csv_url': f"/media/downloads/{file_id}_contacts.csv",
-        'excel_url': f"/media/downloads/{file_id}_contacts.xlsx",
+        'csv_url': f"/media/downloads/contacts.csv",
+        'excel_url': f"/media/downloads/contacts.xlsx",
         'preview_data': preview_data,
-        'file_id': file_id,
         'total_rows': len(results),
         'columns': list(preview_data[0].keys()) if preview_data else []
     }
     
     print("🎉 SEARCH COMPLETED SUCCESSFULLY!")
-    print(f"📁 Files generated: {file_id}_contacts.csv | {file_id}_contacts.xlsx")
+    print(f"📁 Files generated: contacts.csv | contacts.xlsx")
     return result
