@@ -38,6 +38,10 @@
             --link-color: #38bdf8;
         }
 
+        .container {
+            max-width: 1440px !important;
+        }
+
         [data-theme="light"] {
             --bg-color: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
             --text-main: #1e293b;
@@ -123,6 +127,18 @@
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 8px;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary) !important;
+            opacity: 0.35;
+            font-weight: 300;
+        }
+
+        .form-text {
+            color: var(--text-secondary) !important;
+            opacity: 0.5;
+            font-size: 0.8rem;
         }
 
         .btn-primary {
@@ -235,8 +251,14 @@
 
         .table td {
             border: none;
-            padding: 15px;
+            padding: 12px 15px;
             vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table td.wrap-cell {
+            white-space: normal;
+            min-width: 200px;
         }
 
         .table td:first-child {
@@ -616,7 +638,7 @@
                 tr.setAttribute('data-aos-delay', index * 50);
 
                 tr.innerHTML = `
-                    <td>
+                    <td class="wrap-cell">
                         <div class="fw-bold">${row.Company || '-'}</div>
                         <div class="text-secondary small">${row.Company_Industry || ''}</div>
                     </td>
