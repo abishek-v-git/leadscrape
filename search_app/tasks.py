@@ -10,32 +10,28 @@ from django.conf import settings
 load_dotenv()
 
 def search_contacts_sync(search_params):
-    print("🚀 STARTING CONTACT SEARCH")
-    print(f"📋 Search params: {search_params}")
+    print("🚀 STARTING DEEP CONTACT SEARCH")
     
     api_key = os.getenv("APOLLO_API_KEY")
     if not api_key:
-        print("❌ ERROR: API_KEY not found in environment")
         raise ValueError("API_KEY not found in environment")
     
-    print("✅ API_KEY found")
     base_url = "https://api.apollo.io/v1"
     headers = {
         "Content-Type": "application/json",
         "X-Api-Key": api_key
     }
     
-    # Parse inputs
-    keywords = [k.strip() for k in search_params['keywords'].split(',')]
-    titles = [t.strip() for t in search_params['titles'].split(',')]
-    location = search_params['location']
-    max_results = search_params['max_results']
-    per_page = search_params['per_page']
+    # Parse inputs with better robustness
+    keywords = [k.strip() for k in search_params.get('keywords', '').split(',') if k.strip()]
+    titles = [t.strip() for t in search_params.get('titles', '').split(',') if t.strip()]
+    seniorities = [s.strip() for s in search_params.get('seniorities', '').split(',') if s.strip()]
+    industries = [i.strip() for i in search_params.get('industries', '').split(',') if i.strip()]
+    locations = [l.strip() for l in search_params.get('location', '').split(',') if l.strip()]
+    company_sizes = [cs.strip() for cs in search_params.get('company_size', '').split(',') if cs.strip()]
     
-    print(f"🔍 Keywords: {keywords}")
-    print(f"💼 Titles: {titles}")
-    print(f"📍 Location: {location}")
-    print(f"📊 Max results: {max_results}, Per page: {per_page}")
+    max_results = min(int(search_params.get('max_results', 50)), 500)
+    per_page = min(int(search_params.get('per_page', 50)), 100)
     
     results = []
     page = 1
@@ -44,107 +40,113 @@ def search_contacts_sync(search_params):
         print(f"🌐 Fetching page {page}...")
         
         payload = {
-            "q": " OR ".join(keywords),
-            "person_titles": titles,
-            "person_locations": [location],
             "page": page,
             "per_page": per_page
         }
         
-        print(f"📤 Sending request to page {page}")
+        # Build payload dynamically to avoid sending empty filters
+        if keywords: payload["q_keywords"] = ", ".join(keywords)
+        if titles: payload["person_titles"] = titles
+        if seniorities: payload["person_seniorities"] = seniorities
+        if industries: payload["organization_industries"] = industries
+        if locations: payload["person_locations"] = locations
+        if company_sizes: payload["organization_num_employees_ranges"] = company_sizes
+
         response = requests.post(
             f"{base_url}/contacts/search",
             json=payload,
             headers=headers
         )
         
-        print(f"📥 Response status: {response.status_code}")
-        
         if response.status_code != 200:
-            print(f"❌ API request failed: {response.status_code}")
-            print(f"Response text: {response.text[:500]}")
-            raise ValueError(f"API request failed: {response.status_code}")
+            print(f"❌ API Error: {response.text}")
+            break
         
         data = response.json()
         contacts = data.get("contacts", [])
-        print(f"📈 Found {len(contacts)} contacts on page {page}")
         
         if not contacts:
-            print("✅ No more contacts found")
             break
         
-        for i, c in enumerate(contacts, 1):
-            org = c.get("organization", {})
-            results.append({
-                "Company": org.get("name", ""),
-                "Company_Employees": org.get("estimated_num_employees"),
-                "Company_Industry": org.get("industry", ""),
-                "Company_Description": org.get("description", ""),
-                "Company_Website": org.get("website_url", ""),
-                "Contact_First_Name": c.get("first_name", ""),
-                "Contact_Last_Name": c.get("last_name", ""),
-                "Contact_Title": c.get("title", ""),
-                "Contact_Email": c.get("email", ""),
-                "Contact_Phone": c.get("phone_number", ""),
-                "Contact_LinkedIn": c.get("linkedin_url", ""),
-                "Contact_ID": c.get("id"),
-                "Company_ID": org.get("id")
-            })
-            print(f"   Added contact {len(results)}: {c.get('first_name', '')} {c.get('last_name', '')}")
+        for contact in contacts:
+            org = contact.get("organization", {})
+            
+            # Extract EVERY detail for the export
+            entry = {
+                # Contact Personal Details
+                "First Name": contact.get("first_name"),
+                "Last Name": contact.get("last_name"),
+                "Job Title": contact.get("title"),
+                "Seniority": contact.get("seniority"),
+                "Email": contact.get("email"),
+                "Direct Phone": contact.get("phone_number"),
+                "LinkedIn Profile": contact.get("linkedin_url"),
+                "Twitter URL": contact.get("twitter_url"),
+                "Facebook URL": contact.get("facebook_url"),
+                "City": contact.get("city"),
+                "State": contact.get("state"),
+                "Country": contact.get("country"),
+                "Headline": contact.get("headline"),
+                
+                # Company Details
+                "Company Name": org.get("name"),
+                "Industry": org.get("industry"),
+                "Employees": org.get("estimated_num_employees"),
+                "Revenue Range": org.get("annual_revenue"),
+                "Company Website": org.get("website_url"),
+                "Company LinkedIn": org.get("linkedin_url"),
+                "Company Twitter": org.get("twitter_url"),
+                "Company Facebook": org.get("facebook_url"),
+                "Company Phone": org.get("phone"),
+                "Company Description": org.get("description"),
+                "Company Addressing": f"{org.get('street_address', '')}, {org.get('city', '')}, {org.get('state', '')} {org.get('postal_code', '')}",
+                "SEO Description": org.get("seo_description"),
+                "Founded Year": org.get("founded_year")
+            }
+            results.append(entry)
             
             if len(results) >= max_results:
-                print(f"✅ Reached max results: {max_results}")
                 break
         
         page += 1
-        time.sleep(0.4)  # Rate limiting
+        if page > data.get("pagination", {}).get("total_pages", page):
+            break
+        time.sleep(0.5)
     
-    print(f"📊 Total results collected: {len(results)}")
-    
-    # Generate files WITHOUT ID columns
+    # Generate files
     download_dir = "media/downloads"
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
     else:
-        # Clear existing files in the media folder to keep only the one recent set
         for f in os.listdir(download_dir):
-            file_path = os.path.join(download_dir, f)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                print(f"⚠️ Could not delete old file {f}: {e}")
+            try: os.remove(os.path.join(download_dir, f))
+            except: pass
 
     csv_path = f"{download_dir}/contacts.csv"
     excel_path = f"{download_dir}/contacts.xlsx"
     
-    print("💾 Saving CSV file...")
     df = pd.DataFrame(results)
     
-    # 👇 REMOVE THESE COLUMNS before saving
-    df_clean = df.drop(columns=['Contact_ID', 'Company_ID'], errors='ignore')
-    df_clean.to_csv(csv_path, index=False)
-    print("✅ CSV saved")
+    # Export clean files
+    df.to_csv(csv_path, index=False)
+    df.to_excel(excel_path, index=False)
     
-    print("💾 Saving Excel file...")
-    df_clean.to_excel(excel_path, index=False)
-    print("✅ Excel saved")
-    
-    # Return preview WITHOUT IDs too
+    # Prepare preview (limit columns for UI)
     preview_data = []
-    for row in results:
-        clean_row = {k: v for k, v in row.items() if k not in ['Contact_ID', 'Company_ID']}
-        preview_data.append(clean_row)
+    for row in results[:20]: # Show first 20 in UI
+        preview_data.append({
+            "Company": row["Company Name"],
+            "Company_Industry": row["Industry"],
+            "Contact_First_Name": row["First Name"],
+            "Contact_Last_Name": row["Last Name"],
+            "Contact_Title": row["Job Title"],
+            "Contact_Email": row["Email"],
+            "Contact_LinkedIn": row["LinkedIn Profile"]
+        })
     
-    result = {
+    return {
         'results_count': len(results),
         'csv_url': f"/media/downloads/contacts.csv",
         'excel_url': f"/media/downloads/contacts.xlsx",
-        'preview_data': preview_data,
-        'total_rows': len(results),
-        'columns': list(preview_data[0].keys()) if preview_data else []
+        'preview_data': preview_data
     }
-    
-    print("🎉 SEARCH COMPLETED SUCCESSFULLY!")
-    print(f"📁 Files generated: contacts.csv | contacts.xlsx")
-    return result

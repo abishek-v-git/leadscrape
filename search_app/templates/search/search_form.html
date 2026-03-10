@@ -449,27 +449,45 @@
             <form id="searchForm">
                 {% csrf_token %}
                 <div class="row g-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label"><i class="bi bi-tag-fill me-2"></i>Keywords</label>
                         {{ form.keywords }}
-                        <div class="form-text text-secondary">Separate with commas (e.g. SaaS, Fintech)</div>
+                        <div class="form-text">e.g. SaaS, Fintech, Logistics</div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label"><i class="bi bi-person-badge-fill me-2"></i>Job Titles</label>
                         {{ form.titles }}
-                        <div class="form-text text-secondary">Separate with commas (e.g. CEO, CTO)</div>
+                        <div class="form-text">e.g. CEO, CTO, Operations</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="bi bi-person-up me-2"></i>Seniorities</label>
+                        {{ form.seniorities }}
+                        <div class="form-text">e.g. c_suite, vp, director, founder</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="bi bi-building-fill me-2"></i>Industries</label>
+                        {{ form.industries }}
+                        <div class="form-text">e.g. Software, Real Estate</div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label"><i class="bi bi-geo-alt-fill me-2"></i>Location</label>
                         {{ form.location }}
+                        <div class="form-text">e.g. United States, London</div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-bar-chart-fill me-2"></i>Max Results</label>
+                        <label class="form-label"><i class="bi bi-people-fill me-2"></i>Company Size</label>
+                        {{ form.company_size }}
+                        <div class="form-text">e.g. 11-50, 51-200</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-bar-chart-fill me-2"></i>Max Leads to Pull</label>
                         {{ form.max_results }}
+                        <div class="form-text">Pull up to 500 leads at once</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-list-ol me-2"></i>Results Per Page</label>
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-list-ol me-2"></i>Results Per Page (Speed)</label>
                         {{ form.per_page }}
+                        <div class="form-text">Higher = Faster (max 100)</div>
                     </div>
                 </div>
                 <div class="mt-5 text-center">
