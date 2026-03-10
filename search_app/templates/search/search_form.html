@@ -1,143 +1,541 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Contact Search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Search | Premium Lead Scraper</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <style>
-        .search-container { min-height: 200px; }
-        .results-section { display: none; }
-        .loading-section { display: none; }
-        .console-output { 
-            max-height: 150px; 
-            overflow-y: auto; 
-            background: #f8f9fa; 
-            font-family: monospace; 
-            font-size: 12px;
-            border-radius: 5px;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-color: #f472b6;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --bg-color: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --table-row-bg: rgba(255, 255, 255, 0.03);
+            --table-row-hover: rgba(255, 255, 255, 0.06);
+            --console-bg: rgba(0, 0, 0, 0.3);
+            --link-color: #38bdf8;
+        }
+
+        [data-theme="light"] {
+            --bg-color: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(99, 102, 241, 0.1);
+            --card-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.2);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #ffffff;
+            --table-row-bg: #ffffff;
+            --table-row-hover: #f1f5f9;
+            --console-bg: #1e293b;
+            --link-color: #4f46e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        h1,
+        h2,
+        h3,
+        .btn-primary {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero-section {
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .form-control,
+        .form-select {
+            background: var(--input-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: var(--text-main) !important;
+            border-radius: 12px !important;
+            padding: 12px 16px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: var(--input-bg) !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 4px rgba(102, 106, 241, 0.2) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            transform: none;
+        }
+
+        /* Loading Animation */
+        .loader-container {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .custom-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #a855f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.05);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .console-output {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 13px;
+            color: #10b981;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Results Table */
+        .results-section {
+            display: none;
+        }
+
+        .table {
+            color: var(--text-main);
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .table thead th {
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 15px;
+        }
+
+        .table tbody tr {
+            background: var(--table-row-bg);
+            border-radius: 15px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: var(--table-row-hover);
+            transform: scale(1.005);
+        }
+
+        .table td {
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .table td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .table td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .linkedin-link {
+            color: var(--link-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .linkedin-link:hover {
+            opacity: 0.8;
+        }
+
+        .btn-download {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: var(--table-row-hover);
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .btn-export i {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-export:hover i {
+            transform: translateY(3px);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Theme Toggle */
+        .theme-switch-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #1e293b;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 24px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Bootstrap-icons;
+        }
+
+        input:checked+.slider {
+            background-color: #6366f1;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider i {
+            color: #f59e0b;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 8px;
+            font-size: 14px;
+            transition: 0.4s;
+        }
+
+        .slider i.bi-moon-fill {
+            left: auto;
+            right: 8px;
+            color: #94a3b8;
         }
     </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-12">
-                <!-- 🧭 SEARCH FORM - ALWAYS VISIBLE (TOP) -->
-                <div class="card shadow mb-4 search-container">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0"><i class="bi bi-search"></i> Contact Search</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="searchForm">
-                            {% csrf_token %}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Keywords (comma separated)</label>
-                                    {{ form.keywords }}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Job Titles (comma separated)</label>
-                                    {{ form.titles }}
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Location</label>
-                                    {{ form.location }}
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Max Results</label>
-                                    {{ form.max_results }}
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Results Per Page</label>
-                                    {{ form.per_page }}
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg px-5" id="searchBtn">
-                                    <i class="bi bi-search"></i> <span id="btnText">Start Search</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
 
-                <!-- ⚡ LOADING - Shows inline below form -->
-                <div id="loadingSection" class="loading-section card shadow mb-4">
-                    <div class="card-body text-center p-5">
-                        <div class="spinner-border text-primary mb-4" style="width: 4rem; height: 4rem;"></div>
-                        <h4>🔍 Searching Contacts...</h4>
-                        <div class="progress mt-4 mb-4" style="height: 30px;">
-                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
-                                 role="progressbar" style="width: 0%">
-                                <span id="progressText">0%</span>
-                            </div>
-                        </div>
-                        <div class="console-output p-3" id="consoleOutput"></div>
-                    </div>
-                </div>
-
-                <!-- ✅ RESULTS - Shows inline below form -->
-               <div id="resultsSection" class="results-section card shadow">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">
-            <i class="bi bi-check-circle"></i> 
-            Search Complete! <span id="resultsCount">-</span> results found
-        </h5>
-        <div>
-            <button id="dummyEmailBtn" class="btn btn-warning me-2" style="display: none;">
-                <i class="bi bi-envelope"></i> Dummy Email Test
-            </button>
-            <a id="downloadExcel" class="btn btn-success me-2" target="_blank">
-                <i class="bi bi-file-earmark-excel"></i> Excel
-            </a>
-            <a id="downloadCsv" class="btn btn-outline-light" target="_blank">
-                <i class="bi bi-filetype-csv"></i> CSV
-            </a>
-            <button class="btn btn-outline-light" onclick="resetSearch()">
-                <i class="bi bi-arrow-clockwise"></i> New Search
-            </button>
-        </div>
+<body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider">
+                <i class="bi bi-sun-fill"></i>
+                <i class="bi bi-moon-fill"></i>
+            </div>
+        </label>
     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-sm mb-0">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Company</th>
-                                        <th>Contact Name</th>
-                                        <th>Title</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="previewTableBody">
-                                    <!-- Results populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
+
+    <div class="container py-5">
+        <!-- Hero -->
+        <div class="hero-section" data-aos="fade-down">
+            <h1 class="display-4"><span class="gradient-text">Leadscraper</span></h1>
+            <p class="text-secondary lead">Find high-quality leads with precision and speed.</p>
+        </div>
+
+        <!-- Search Card -->
+        <div class="glass-card p-4 p-md-5" data-aos="fade-up">
+            <form id="searchForm">
+                {% csrf_token %}
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-tag-fill me-2"></i>Keywords</label>
+                        {{ form.keywords }}
+                        <div class="form-text text-secondary">Separate with commas (e.g. SaaS, Fintech)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-person-badge-fill me-2"></i>Job Titles</label>
+                        {{ form.titles }}
+                        <div class="form-text text-secondary">Separate with commas (e.g. CEO, CTO)</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="bi bi-geo-alt-fill me-2"></i>Location</label>
+                        {{ form.location }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="bi bi-bar-chart-fill me-2"></i>Max Results</label>
+                        {{ form.max_results }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="bi bi-list-ol me-2"></i>Results Per Page</label>
+                        {{ form.per_page }}
                     </div>
                 </div>
+                <div class="mt-5 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow-lg" id="searchBtn">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        <span id="btnText">Initiate Search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loader-container glass-card" data-aos="zoom-in">
+            <div class="custom-spinner"></div>
+            <h3 class="mb-3">Scanning Database...</h3>
+            <p class="text-secondary mb-4">Finding the best matches for your criteria.</p>
+            <div class="progress mb-4">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                    style="width: 0%"></div>
+            </div>
+            <div class="console-output text-start" id="consoleOutput"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section glass-card" data-aos="fade-up">
+            <div class="results-header">
+                <div>
+                    <span class="status-badge badge-success mb-2 d-inline-block">Search Complete</span>
+                    <h4 class="mb-0"><span id="resultsCount">0</span> Matches Found</h4>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="dummyEmailBtn" class="btn btn-download px-3" style="display: none;">
+                        <i class="bi bi-envelope-at me-2"></i>Test Email
+                    </button>
+                    <a id="downloadExcel" class="btn btn-primary btn-export" target="_blank">
+                        <span>Export</span>
+                        <i class="bi bi-arrow-down-circle-fill"></i>
+                    </a>
+                    <button class="btn btn-download" onclick="resetSearch()" title="Reset Search">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Contact Name</th>
+                            <th>Title</th>
+                            <th>Email</th>
+                            <th><i class="bi bi-linkedin me-2"></i>LinkedIn</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-quad',
+            once: true
+        });
+
+        document.getElementById('searchForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             // Show loading, hide results
             document.getElementById('loadingSection').style.display = 'block';
             document.getElementById('resultsSection').style.display = 'none';
-            document.getElementById('consoleOutput').innerHTML = '';
-            
+            document.getElementById('consoleOutput').innerHTML = '<div class="text-info">>> Connecting to Apollo API...</div>';
+
             const formData = new FormData(this);
             const btn = document.getElementById('searchBtn');
-            const originalText = document.getElementById('btnText').innerHTML;
-            
+            const originalText = document.getElementById('btnText').textContent;
+
             btn.disabled = true;
-            document.getElementById('btnText').innerHTML = 'Searching...';
-            
+            document.getElementById('btnText').textContent = 'Processing...';
+
             try {
                 const response = await fetch('/search/start/', {
                     method: 'POST',
@@ -146,31 +544,35 @@
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === 'success') {
                     document.getElementById('loadingSection').style.display = 'none';
                     document.getElementById('resultsSection').style.display = 'block';
                     populateResults(data.data);
+                    // Refresh AOS for new elements
+                    AOS.refresh();
                 } else {
                     throw new Error(JSON.stringify(data.errors || data.error));
                 }
             } catch (error) {
-                console.error('Search error:', error); 
-                document.getElementById('consoleOutput').innerHTML += 
-                    `<div class="text-danger">❌ Error: ${error.message}</div>`;
-                alert('Search failed. Check console above.');
+                console.error('Search error:', error);
+                document.getElementById('consoleOutput').innerHTML +=
+                    `<div class="text-danger mt-2">❌ Error: ${error.message}</div>`;
+                alert('Search failed. Check console output.');
             } finally {
                 btn.disabled = false;
-                document.getElementById('btnText').innerHTML = originalText;
-            }   
+                document.getElementById('btnText').textContent = originalText;
+            }
         });
+
         async function sendDummyEmail() {
             const btn = document.getElementById('dummyEmailBtn');
+            const originalContent = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
-            
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
             try {
                 const response = await fetch('/search/dummy-email/', {
                     method: 'POST',
@@ -178,13 +580,13 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                     },
-                    body: JSON.stringify({test: true})
+                    body: JSON.stringify({ test: true })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === 'success') {
-                    document.getElementById('consoleOutput').innerHTML += 
+                    document.getElementById('consoleOutput').innerHTML +=
                         '<div class="text-success mt-2">✅ Dummy email test sent successfully!</div>';
                     alert('✅ Dummy email sent to test list!');
                 } else {
@@ -192,47 +594,79 @@
                 }
             } catch (error) {
                 console.error('Dummy email error:', error);
-                document.getElementById('consoleOutput').innerHTML += 
-                    `<div class="text-danger mt-2">❌ Dummy email failed: ${error.message}</div>`;
-                alert('❌ Dummy email test failed. Check console.');
+                alert('❌ Dummy email test failed.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-envelope"></i> Dummy Email Test';
+                btn.innerHTML = originalContent;
             }
         }
 
         function populateResults(data) {
-            document.getElementById('resultsCount').textContent = `${data.results_count} results`;
+            document.getElementById('resultsCount').textContent = data.results_count;
             document.getElementById('downloadExcel').href = data.excel_url;
-            document.getElementById('downloadCsv').href = data.csv_url;
-            document.getElementById('dummyEmailBtn').style.display = 'inline-block'; 
+            document.getElementById('dummyEmailBtn').style.display = 'inline-block';
             document.getElementById('dummyEmailBtn').onclick = sendDummyEmail;
 
-            
             const tbody = document.getElementById('previewTableBody');
             tbody.innerHTML = '';
-            
-            data.preview_data.forEach(row => {
+
+            data.preview_data.forEach((row, index) => {
                 const tr = document.createElement('tr');
+                tr.setAttribute('data-aos', 'fade-up');
+                tr.setAttribute('data-aos-delay', index * 50);
+
                 tr.innerHTML = `
-                    <td><strong>${row.Company || '-'}</strong></td>
+                    <td>
+                        <div class="fw-bold">${row.Company || '-'}</div>
+                        <div class="text-secondary small">${row.Company_Industry || ''}</div>
+                    </td>
                     <td>${row.Contact_First_Name || ''} ${row.Contact_Last_Name || ''}</td>
-                    <td>${row.Contact_Title || '-'}</td>
-                    <td>${row.Contact_Email ? `<a href="mailto:${row.Contact_Email}" class="text-decoration-none">${row.Contact_Email}</a>` : '-'}</td>
-                    <td>${row.Contact_Phone || '-'}</td>
+                    <td><span class="badge bg-secondary opacity-75">${row.Contact_Title || '-'}</span></td>
+                    <td><a href="mailto:${row.Contact_Email}" class="text-info text-decoration-none">${row.Contact_Email}</a></td>
+                    <td>
+                        ${row.Contact_LinkedIn ?
+                        `<a href="${row.Contact_LinkedIn}" target="_blank" class="linkedin-link">
+                                <i class="bi bi-linkedin"></i> Profile
+                            </a>` :
+                        '<span class="text-muted small">Not Available</span>'}
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
-        
+
         function resetSearch() {
             document.getElementById('resultsSection').style.display = 'none';
             document.getElementById('loadingSection').style.display = 'none';
             document.getElementById('searchForm').reset();
             document.getElementById('searchBtn').disabled = false;
-            document.getElementById('btnText').innerHTML = 'Start Search';
+            document.getElementById('btnText').textContent = 'Initiate Search';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Theme Toggle Logic
+        const toggleSwitch = document.querySelector('#checkbox');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'light') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme, false);
     </script>
 </body>
+
 </html>
