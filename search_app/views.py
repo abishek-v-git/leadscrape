@@ -44,14 +44,13 @@ def dummy_email_test(request):
     print("📧 DUMMY COLD EMAIL TEST TRIGGERED")
     
     try:
-        # Dummy test recipients WITH sample lead data
         test_leads = [
             {
-                "email": "abishekabido@gmail.com",
+                "email": "abishek@inessconsulting.com",
                 "first_name": "Abishek", 
                 "last_name": "V", 
                 "company": "INESS Global Solutions Test",
-                "title": "Supply Chain Manager"
+                "title": "Supply chain"
             }
         ]
         
@@ -90,7 +89,7 @@ Could we schedule a quick 15-minute call next week to discuss how INESS can supp
 Looking forward to hearing from you!
 
 Best regards,  
-Your Name  
+AAA V,
 Business Development Manager  
 **INESS Global Solutions**  
 📧 your-email@inessglobalsolutions.com  
