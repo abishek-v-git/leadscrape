@@ -15,6 +15,18 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv(BASE_DIR / ".env")
+
+APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
+
+EMAIL_HOST = os.getenv("SMTP_HOST")
+EMAIL_PORT = int(os.getenv("SMTP_PORT", 587))
+EMAIL_HOST_USER = os.getenv("SMTP_USER")
+EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASS")
+EMAIL_USE_TLS = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
