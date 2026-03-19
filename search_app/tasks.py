@@ -226,24 +226,30 @@ def search_contacts_sync(search_params):
     ]
     df_filters = pd.DataFrame(filters_data[1:], columns=["Filter", "Value"])
 
-    with pd.ExcelWriter(f"{download_dir}/contacts.xlsx", engine="openpyxl") as writer:
-        df.to_excel(writer, sheet_name="Contacts", index=False)
-        df_filters.to_excel(writer, sheet_name="Search Filters", index=False)
-
-        # Style the filters sheet
-        ws = writer.sheets["Search Filters"]
-        ws.column_dimensions["A"].width = 22
-        ws.column_dimensions["B"].width = 55
+    try:
         from openpyxl.styles import Font, PatternFill, Alignment
-        header_fill = PatternFill("solid", fgColor="0078D4")
-        header_font = Font(bold=True, color="FFFFFF")
-        for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
-            cell.alignment = Alignment(horizontal="left")
-        for row in ws.iter_rows(min_row=2):
-            row[0].font = Font(bold=True)
-            row[1].alignment = Alignment(wrap_text=True)
+        with pd.ExcelWriter(f"{download_dir}/contacts.xlsx", engine="openpyxl") as writer:
+            df.to_excel(writer, sheet_name="Contacts", index=False)
+            df_filters.to_excel(writer, sheet_name="Search Filters", index=False)
+
+            ws = writer.sheets["Search Filters"]
+            ws.column_dimensions["A"].width = 22
+            ws.column_dimensions["B"].width = 55
+            header_fill = PatternFill("solid", fgColor="0078D4")
+            header_font = Font(bold=True, color="FFFFFF")
+            for cell in ws[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = Alignment(horizontal="left")
+            for row in ws.iter_rows(min_row=2):
+                row[0].font = Font(bold=True)
+                row[1].alignment = Alignment(wrap_text=True)
+        print("✅ Excel export with Search Filters sheet done")
+    except Exception as e:
+        print(f"❌ Excel export error: {e}")
+        with pd.ExcelWriter(f"{download_dir}/contacts.xlsx", engine="openpyxl") as writer:
+            df.to_excel(writer, sheet_name="Contacts", index=False)
+            pd.DataFrame([{"Error": str(e)}]).to_excel(writer, sheet_name="Debug Error", index=False)
 
     # ── Preview ──────────────────────────────────────────────────────
     preview_data = [
