@@ -224,43 +224,36 @@ def search_contacts_sync(search_params):
         ("Total Fetched",   str(len(results))),
         ("Exported On",     time.strftime("%Y-%m-%d %H:%M:%S")),
     ]
-    try:
-        import openpyxl
-        from openpyxl.styles import Font, PatternFill
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill
 
-        wb = openpyxl.Workbook()
+    wb = openpyxl.Workbook()
 
-        # Sheet 1 — Contacts
-        ws1 = wb.active
-        ws1.title = "Contacts"
-        if not df.empty:
-            ws1.append(list(df.columns))
-            for row in df.itertuples(index=False):
-                ws1.append(list(row))
-            hfill = PatternFill("solid", fgColor="0078D4")
-            hfont = Font(bold=True, color="FFFFFF")
-            for cell in ws1[1]:
-                cell.fill = hfill
-                cell.font = hfont
+    # Sheet 1 — Contacts
+    ws1 = wb.active
+    ws1.title = "Contacts"
+    ws1.append(list(df.columns))
+    for row in df.itertuples(index=False):
+        ws1.append(list(row))
+    hfill = PatternFill("solid", fgColor="0078D4")
+    hfont = Font(bold=True, color="FFFFFF")
+    for cell in ws1[1]:
+        cell.fill = hfill
+        cell.font = hfont
 
-        # Sheet 2 — Search Filters
-        ws2 = wb.create_sheet("Search Filters")
-        ws2.column_dimensions["A"].width = 22
-        ws2.column_dimensions["B"].width = 55
-        ws2.append(["Filter", "Value"])
-        for cell in ws2[1]:
-            cell.fill = PatternFill("solid", fgColor="0078D4")
-            cell.font = Font(bold=True, color="FFFFFF")
-        for label, value in filters_data[1:]:
-            ws2.append([label, str(value)])
-            ws2.cell(row=ws2.max_row, column=1).font = Font(bold=True)
+    # Sheet 2 — Search Filters
+    ws2 = wb.create_sheet("Search Filters")
+    ws2.column_dimensions["A"].width = 22
+    ws2.column_dimensions["B"].width = 55
+    ws2.append(["Filter", "Value"])
+    for cell in ws2[1]:
+        cell.fill = PatternFill("solid", fgColor="0078D4")
+        cell.font = Font(bold=True, color="FFFFFF")
+    for label, value in filters_data[1:]:
+        ws2.append([label, str(value)])
+        ws2.cell(row=ws2.max_row, column=1).font = Font(bold=True)
 
-        wb.save(f"{download_dir}/contacts.xlsx")
-        print("✅ Excel export with Search Filters sheet done")
-    except Exception:
-        import traceback
-        print(f"❌ Excel export error: {traceback.format_exc()}")
-        df.to_excel(f"{download_dir}/contacts.xlsx", index=False)
+    wb.save(f"{download_dir}/contacts.xlsx")
 
     # ── Preview ──────────────────────────────────────────────────────
     preview_data = [
@@ -278,7 +271,7 @@ def search_contacts_sync(search_params):
 
     return {
         'results_count': len(results),
-        'csv_url':       '/media/downloads/contacts.csv',
-        'excel_url':     '/media/downloads/contacts.xlsx',
+        'csv_url':       f'/media/downloads/contacts.csv?t={int(time.time())}',
+        'excel_url':     f'/media/downloads/contacts.xlsx?t={int(time.time())}',
         'preview_data':  preview_data,
     }
