@@ -4,5 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.search_form, name='search_form'),
     path('start/', views.start_search, name='start_search'),
-    path('dummy-email/', views.dummy_email_test, name='dummy_email_test')
+    path('dummy-email/', views.dummy_email_test, name='dummy_email_test'),
+    path('credits/', views.credit_usage, name='credit_usage'),
+    path('apollo-raw/', views.apollo_raw_debug, name='apollo_raw_debug'),
 ]

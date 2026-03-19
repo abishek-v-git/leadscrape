@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Apollo Credit Usage</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body { background: #0f1117; color: #e0e0e0; }
+    .card { background: #1a1d27; border: 1px solid #2a2d3a; }
+    .badge-email { background: #0078d4; }
+    .table th { color: #8b9eb7; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    .today-row { background: rgba(0,120,212,.08); }
+  </style>
+</head>
+<body class="py-4">
+<div class="container">
+
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/" class="btn btn-sm btn-outline-secondary">&larr; Back to Search</a>
+    <h4 class="mb-0">Apollo Credit Usage</h4>
+  </div>
+
+  <!-- Daily summary cards -->
+  <div class="row g-3 mb-4">
+    {% for day, stats in days|slice:":7" %}
+    <div class="col-md-4 col-lg-3">
+      <div class="card p-3 {% if forloop.first %}border-primary{% endif %}">
+        <div class="fw-bold mb-1 {% if forloop.first %}text-primary{% endif %}">
+          {{ day }}{% if forloop.first %} &nbsp;<span class="badge bg-primary" style="font-size:.7rem">Today</span>{% endif %}
+        </div>
+        <div class="d-flex gap-3 mt-2">
+          <div>
+            <div class="text-muted" style="font-size:.75rem">Searches</div>
+            <div class="fs-5 fw-bold">{{ stats.searches }}</div>
+          </div>
+          <div>
+            <div class="text-muted" style="font-size:.75rem">Contacts</div>
+            <div class="fs-5 fw-bold">{{ stats.contacts }}</div>
+          </div>
+          <div>
+            <div class="text-muted" style="font-size:.75rem">Emails revealed</div>
+            <div class="fs-5 fw-bold text-info">{{ stats.emails }}</div>
+          </div>
+        </div>
+        {% if stats.daily_usage %}
+        <div class="mt-2 text-muted" style="font-size:.75rem">
+          API calls today: <strong class="text-warning">{{ stats.daily_usage }}</strong>
+        </div>
+        {% endif %}
+        {% if stats.last_remaining %}
+        <div class="text-muted" style="font-size:.75rem">
+          Rate limit remaining: <strong>{{ stats.last_remaining }}</strong>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-muted">No searches logged yet. Run a search to start tracking.</div>
+    {% endfor %}
+  </div>
+
+  <!-- Recent searches log -->
+  {% if entries %}
+  <div class="card">
+    <div class="card-header">Recent searches (last 50)</div>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Titles / Keywords</th>
+            <th>Location</th>
+            <th>Max</th>
+            <th>Fetched</th>
+            <th>Emails revealed</th>
+            <th>API calls today</th>
+            <th>Rate limit left</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td style="white-space:nowrap;font-size:.8rem">{{ e.timestamp }}</td>
+            <td style="font-size:.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              {% if e.search_titles %}T: {{ e.search_titles }}{% endif %}
+              {% if e.search_keywords %}<br>K: {{ e.search_keywords }}{% endif %}
+            </td>
+            <td style="font-size:.8rem">{{ e.search_location|default:"-" }}</td>
+            <td class="text-center">{{ e.max_results }}</td>
+            <td class="text-center fw-bold">{{ e.contacts_fetched }}</td>
+            <td class="text-center text-info fw-bold">{{ e.emails_revealed }}</td>
+            <td class="text-center text-warning">{{ e.daily_usage|default:"-" }}</td>
+            <td class="text-center">{{ e.rate_limit_remaining|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mt-3 text-muted" style="font-size:.8rem">
+    <strong>Note:</strong> Apollo charges 1 export credit per revealed email/phone.
+    Free plan: 50 exports/month &bull; Basic: 10,000/month. Check your plan at
+    <a href="https://app.apollo.io/#/settings/credits/current" target="_blank" class="text-info">apollo.io/settings/credits</a>.
+  </div>
+
+</div>
+</body>
+</html>

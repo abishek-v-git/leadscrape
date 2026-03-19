@@ -1,620 +1,1000 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Search | Premium Lead Scraper</title>
-
-    <!-- Fonts -->
+    <title>LeadFinder — INESS Supply Chain</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- AOS Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --accent-color: #f472b6;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            --bg-color: radial-gradient(circle at top right, #1e1b4b, #0f172a);
-            --text-main: #f8fafc;
-            --text-secondary: #94a3b8;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --input-bg: rgba(255, 255, 255, 0.05);
-            --table-row-bg: rgba(255, 255, 255, 0.03);
-            --table-row-hover: rgba(255, 255, 255, 0.06);
-            --console-bg: rgba(0, 0, 0, 0.3);
-            --link-color: #38bdf8;
-        }
+        /* ── Reset & Base ─────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container {
-            max-width: 1440px !important;
+        :root {
+            --bg:           #0c0c12;
+            --surface:      #13131c;
+            --surface-2:    #1a1a26;
+            --border:       #242436;
+            --border-light: #2e2e45;
+            --primary:      #6366f1;
+            --primary-dim:  rgba(99,102,241,0.12);
+            --primary-glow: rgba(99,102,241,0.25);
+            --text:         #e2e8f0;
+            --text-2:       #94a3b8;
+            --text-3:       #4a5568;
+            --green:        #10b981;
+            --green-dim:    rgba(16,185,129,0.12);
+            --red:          #ef4444;
+            --blue:         #38bdf8;
+            --amber:        #f59e0b;
+            --sidebar-w:    310px;
+            --nav-h:        56px;
         }
 
         [data-theme="light"] {
-            --bg-color: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
-            --text-main: #1e293b;
-            --text-secondary: #64748b;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(99, 102, 241, 0.1);
-            --card-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.2);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --input-bg: #ffffff;
-            --table-row-bg: #ffffff;
-            --table-row-hover: #f1f5f9;
-            --console-bg: #1e293b;
-            --link-color: #4f46e5;
+            --bg:           #f1f5f9;
+            --surface:      #ffffff;
+            --surface-2:    #f8fafc;
+            --border:       #e2e8f0;
+            --border-light: #cbd5e1;
+            --primary:      #4f46e5;
+            --primary-dim:  rgba(79,70,229,0.08);
+            --text:         #1e293b;
+            --text-2:       #64748b;
+            --text-3:       #94a3b8;
+            --green:        #059669;
+            --green-dim:    rgba(5,150,105,0.1);
+            --blue:         #2563eb;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            transition: background 0.4s ease, color 0.4s ease;
+            font-size: 13.5px;
+            line-height: 1.5;
+            transition: background 0.3s, color 0.3s;
         }
 
-        h1,
-        h2,
-        h3,
-        .btn-primary {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .hero-section {
-            padding: 60px 0 40px;
-            text-align: center;
-        }
-
-        .gradient-text {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 2rem;
-        }
-
-        .glass-card:hover {
-            box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.5);
-            transform: translateY(-5px);
-        }
-
-        .form-control,
-        .form-select {
-            background: var(--input-bg) !important;
-            border: 1px solid var(--glass-border) !important;
-            color: var(--text-main) !important;
-            border-radius: 12px !important;
-            padding: 12px 16px !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            background: var(--input-bg) !important;
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 4px rgba(102, 106, 241, 0.2) !important;
-            color: var(--text-main) !important;
-        }
-
-        .form-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .form-control::placeholder {
-            color: var(--text-secondary) !important;
-            opacity: 0.35;
-            font-weight: 300;
-        }
-
-        .form-text {
-            color: var(--text-secondary) !important;
-            opacity: 0.5;
-            font-size: 0.8rem;
-        }
-
-        .btn-primary {
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 12px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+        /* ── Top Nav ──────────────────────────────────────────────── */
+        .top-nav {
+            height: var(--nav-h);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        .brand-icon {
+            width: 30px; height: 30px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
         }
-
-        .btn-primary:disabled {
-            opacity: 0.7;
-            transform: none;
+        .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
         }
-
-        /* Loading Animation */
-        .loader-container {
-            display: none;
-            padding: 40px;
-            text-align: center;
+        .brand-divider {
+            width: 1px; height: 18px;
+            background: var(--border);
         }
-
-        .custom-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #a855f7;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-bottom: 20px;
+        .brand-sub {
+            font-size: 12px;
+            color: var(--text-2);
+            font-weight: 400;
         }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .progress {
-            background: rgba(255, 255, 255, 0.05);
-            height: 12px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .progress-bar {
-            background: var(--primary-gradient);
-            border-radius: 10px;
-        }
-
-        .console-output {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 13px;
-            color: #10b981;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        /* Results Table */
-        .results-section {
-            display: none;
-        }
-
-        .table {
-            color: var(--text-main);
-            border-collapse: separate;
-            border-spacing: 0 10px;
-        }
-
-        .table thead th {
-            border: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            padding: 15px;
-        }
-
-        .table tbody tr {
-            background: var(--table-row-bg);
-            border-radius: 15px;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        .table tbody tr:hover {
-            background: var(--table-row-hover);
-            transform: scale(1.005);
-        }
-
-        .table td {
-            border: none;
-            padding: 12px 15px;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        .table td.wrap-cell {
-            white-space: normal;
-            min-width: 200px;
-        }
-
-        .table td:first-child {
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-        }
-
-        .table td:last-child {
-            border-top-right-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
-
-        .linkedin-link {
-            color: var(--link-color);
-            text-decoration: none;
+        .api-chip {
             display: flex;
             align-items: center;
             gap: 6px;
+            background: var(--primary-dim);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 11.5px;
             font-weight: 500;
-            transition: color 0.2s ease;
+            color: var(--primary);
+        }
+        .api-chip .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
 
-        .linkedin-link:hover {
-            opacity: 0.8;
+        /* Theme toggle */
+        .theme-btn {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            transition: all 0.2s;
         }
-
-        .btn-download {
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+        .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .credits-btn {
+            height: 32px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid #f59e0b;
+            background: rgba(245,158,11,0.1);
+            color: #f59e0b;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
+        .credits-btn:hover { background: rgba(245,158,11,0.2); color: #fbbf24; }
 
-        .btn-download:hover {
-            background: var(--table-row-hover);
-            border-color: var(--text-main);
-            color: var(--text-main);
-        }
-
-        .btn-export {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            overflow: hidden;
-        }
-
-        .btn-export i {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .btn-export:hover i {
-            transform: translateY(3px);
-        }
-
-        .results-header {
+        /* ── App Layout ───────────────────────────────────────────── */
+        .app-layout {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: var(--nav-h);
+            height: calc(100vh - var(--nav-h));
         }
 
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 100px;
-            font-size: 0.75rem;
+        /* ── Sidebar ──────────────────────────────────────────────── */
+        .filter-sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .filter-sidebar::-webkit-scrollbar { width: 4px; }
+        .filter-sidebar::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+        .sidebar-header {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-title {
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-3);
         }
 
-        .badge-success {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
+        .filter-group {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
         }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        /* Theme Toggle */
-        .theme-switch-wrapper {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+        .filter-group-label {
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-3);
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            z-index: 1000;
+            gap: 6px;
+        }
+        .filter-group-label i { font-size: 11px; color: var(--primary); }
+
+        .filter-field { margin-bottom: 10px; }
+        .filter-field:last-child { margin-bottom: 0; }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-2);
+            margin-bottom: 5px;
+            display: block;
         }
 
-        .theme-switch {
-            display: inline-block;
-            height: 34px;
-            position: relative;
-            width: 60px;
+        .filter-input {
+            width: 100%;
+            background: var(--surface-2) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 7px !important;
+            color: var(--text) !important;
+            font-size: 12.5px !important;
+            padding: 7px 10px !important;
+            font-family: 'Inter', sans-serif !important;
+            transition: border-color 0.2s !important;
+            outline: none;
+        }
+        .filter-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--primary-glow) !important;
+        }
+        .filter-input::placeholder { color: var(--text-3) !important; font-size: 12px !important; }
+
+        .hint-text {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-top: 3px;
+            line-height: 1.4;
         }
 
-        .theme-switch input {
-            display: none;
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
-        .slider {
-            background-color: #1e293b;
+        /* Search Button */
+        .sidebar-footer {
+            padding: 14px 18px;
+            margin-top: auto;
+            position: sticky;
             bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border-radius: 34px;
-            border: 1px solid var(--glass-border);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
         }
-
-        .slider:before {
-            background-color: #fff;
-            bottom: 4px;
-            content: "";
-            height: 24px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 24px;
-            border-radius: 50%;
+        .search-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: Bootstrap-icons;
+            gap: 8px;
+            transition: all 0.2s;
+            letter-spacing: 0.1px;
+        }
+        .search-btn:hover { background: #5254cc; box-shadow: 0 4px 16px var(--primary-glow); }
+        .search-btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+        .search-btn i { font-size: 14px; }
+
+        /* ── Main Content ─────────────────────────────────────────── */
+        .results-main {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .results-main::-webkit-scrollbar { width: 6px; }
+        .results-main::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--text-2);
+        }
+        .empty-icon {
+            width: 64px; height: 64px;
+            background: var(--primary-dim);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .empty-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .empty-sub {
+            font-size: 13px;
+            color: var(--text-2);
+            max-width: 380px;
+            line-height: 1.6;
+        }
+        .tip-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .tip-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+        .tip-chip strong { color: var(--text); }
+
+        /* Loading State */
+        #loadingSection {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+        }
+        .loader-ring {
+            width: 52px; height: 52px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .loader-sub {
+            font-size: 12.5px;
+            color: var(--text-2);
+            margin-bottom: 24px;
+        }
+        .progress-wrap {
+            width: 340px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        #progressBar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        .console-output {
+            width: 100%;
+            max-width: 500px;
+            background: #09090f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 11.5px;
+            color: var(--green);
+            max-height: 160px;
+            overflow-y: auto;
+            text-align: left;
+            line-height: 1.7;
+        }
+        [data-theme="light"] .console-output { background: #1e293b; }
+
+        /* Results Section */
+        #resultsSection {
+            display: none;
+            flex-direction: column;
+            flex: 1;
         }
 
-        input:checked+.slider {
-            background-color: #6366f1;
+        .results-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .results-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .results-badge .count {
+            background: var(--green-dim);
+            color: var(--green);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .preview-note {
+            font-size: 11.5px;
+            color: var(--text-3);
         }
 
-        input:checked+.slider:before {
-            transform: translateX(26px);
+        /* Pagination */
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            min-width: 32px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            transition: all 0.15s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+        .page-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .page-info {
+            font-size: 12px;
+            color: var(--text-3);
+            padding: 0 6px;
         }
 
-        .slider i {
-            color: #f59e0b;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            left: 8px;
-            font-size: 14px;
-            transition: 0.4s;
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-size: 12.5px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .action-btn:hover { border-color: var(--border-light); color: var(--text); }
+        .action-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .action-btn.primary:hover { background: #5254cc; }
+        .action-btn i { font-size: 13px; }
+        .action-btn.reset { padding: 6px 9px; }
+
+        /* Table */
+        .table-wrap {
+            flex: 1;
+            overflow: auto;
+        }
+        .leads-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+        .leads-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .leads-table thead th {
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-3);
+            white-space: nowrap;
+        }
+        .leads-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+        .leads-table tbody tr:hover { background: var(--surface-2); }
+        .leads-table td {
+            padding: 10px 14px;
+            vertical-align: middle;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .leads-table td.flexible { white-space: normal; min-width: 160px; max-width: 220px; }
+
+        /* Cell components */
+        .company-cell .company-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .company-cell .company-ind {
+            font-size: 11px;
+            color: var(--text-3);
+        }
+        .person-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+        .title-pill {
+            display: inline-block;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 7px;
+            font-size: 11px;
+            color: var(--text-2);
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .email-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .email-link:hover { text-decoration: underline; }
+        .no-email {
+            color: var(--text-3);
+            font-size: 12px;
+        }
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--blue);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(56,189,248,0.2);
+            background: rgba(56,189,248,0.06);
+            transition: all 0.15s;
+        }
+        .linkedin-btn:hover { background: rgba(56,189,248,0.12); color: var(--blue); }
+        .no-linkedin { color: var(--text-3); font-size: 11.5px; }
+
+        /* Row number */
+        .row-num {
+            color: var(--text-3);
+            font-size: 11.5px;
+            font-variant-numeric: tabular-nums;
+            width: 32px;
+            text-align: center;
         }
 
-        .slider i.bi-moon-fill {
-            left: auto;
-            right: 8px;
-            color: #94a3b8;
+        /* ── Scrollbar ────────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+        /* ── Responsive ───────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .app-layout { flex-direction: column; height: auto; }
+            .filter-sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar-footer { position: static; }
+            :root { --sidebar-w: 100%; }
         }
     </style>
 </head>
-
 <body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider">
-                <i class="bi bi-sun-fill"></i>
-                <i class="bi bi-moon-fill"></i>
-            </div>
-        </label>
-    </div>
 
-    <div class="container py-5">
-        <!-- Hero -->
-        <div class="hero-section" data-aos="fade-down">
-            <h1 class="display-4"><span class="gradient-text">Leadscraper</span></h1>
-            <p class="text-secondary lead">Find high-quality leads with precision and speed.</p>
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="brand-icon">⚡</div>
+            <span class="brand-name">LeadFinder</span>
+            <div class="brand-divider"></div>
+            <span class="brand-sub">INESS Solutions</span>
         </div>
+        <div class="nav-right">
+            <div class="api-chip">
+                <span class="dot"></span>
+                Live Search
+            </div>
+            <a href="/search/credits/" target="_blank" class="credits-btn">
+                <i class="bi bi-lightning-charge-fill"></i>
+                Credits
+            </a>
+            <button class="theme-btn" id="themeToggle" title="Toggle theme">
+                <i class="bi bi-moon-fill" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
 
-        <!-- Search Card -->
-        <div class="glass-card p-4 p-md-5" data-aos="fade-up">
+    <!-- App Layout -->
+    <div class="app-layout">
+
+        <!-- ── Filter Sidebar ── -->
+        <aside class="filter-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title"><i class="bi bi-sliders me-1"></i>Search Filters</div>
+            </div>
+
             <form id="searchForm">
                 {% csrf_token %}
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-tag-fill me-2"></i>Keywords</label>
-                        {{ form.keywords }}
-                        <div class="form-text">e.g. SaaS, Fintech, Logistics</div>
+
+                <!-- Person -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="bi bi-person-fill"></i> Target Person
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-person-badge-fill me-2"></i>Job Titles</label>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Job Titles</label>
                         {{ form.titles }}
-                        <div class="form-text">e.g. CEO, CTO, Operations</div>
+                        <div class="hint-text">e.g. COO, VP Operations, Supply Chain Manager</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-person-up me-2"></i>Seniorities</label>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Seniority Level</label>
                         {{ form.seniorities }}
-                        <div class="form-text">e.g. c_suite, vp, director, founder</div>
+                        <div class="hint-text">e.g. c_suite, vp, director, manager</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-building-fill me-2"></i>Industries</label>
-                        {{ form.industries }}
-                        <div class="form-text">e.g. Software, Real Estate</div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-geo-alt-fill me-2"></i>Location</label>
-                        {{ form.location }}
-                        <div class="form-text">e.g. United States, London</div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><i class="bi bi-people-fill me-2"></i>Company Size</label>
-                        {{ form.company_size }}
-                        <div class="form-text">e.g. 11-50, 51-200</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-bar-chart-fill me-2"></i>Max Leads to Pull</label>
-                        {{ form.max_results }}
-                        <div class="form-text">Pull up to 500 leads at once</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-list-ol me-2"></i>Results Per Page (Speed)</label>
-                        {{ form.per_page }}
-                        <div class="form-text">Higher = Faster (max 100)</div>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Keywords</label>
+                        {{ form.keywords }}
+                        <div class="hint-text">e.g. supply chain, ERP, logistics</div>
                     </div>
                 </div>
-                <div class="mt-5 text-center">
-                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow-lg" id="searchBtn">
-                        <i class="bi bi-rocket-takeoff-fill"></i>
-                        <span id="btnText">Initiate Search</span>
+
+                <!-- Company -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="bi bi-building-fill"></i> Target Company
+                    </div>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Industries</label>
+                        {{ form.industries }}
+                        <div class="hint-text">e.g. Manufacturing, Automotive, Retail</div>
+                    </div>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Location</label>
+                        {{ form.location }}
+                        <div class="hint-text">e.g. India, Pune, Chennai, NCR</div>
+                    </div>
+
+                    <div class="filter-field">
+                        <label class="filter-label">Company Size</label>
+                        {{ form.company_size }}
+                        <div class="hint-text">Ranges: 51-200, 201-500, 501-1000</div>
+                    </div>
+                </div>
+
+                <!-- Config -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="bi bi-gear-fill"></i> Search Config
+                    </div>
+                    <div class="config-row">
+                        <div class="filter-field">
+                            <label class="filter-label">Max Leads</label>
+                            {{ form.max_results }}
+                            <div class="hint-text">10 – 500</div>
+                        </div>
+                        <div class="filter-field">
+                            <label class="filter-label">Per Page</label>
+                            {{ form.per_page }}
+                            <div class="hint-text">Max 100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="sidebar-footer">
+                    <button type="submit" class="search-btn" id="searchBtn">
+                        <i class="bi bi-search"></i>
+                        <span id="btnText">Run Search</span>
                     </button>
                 </div>
             </form>
-        </div>
+        </aside>
 
-        <!-- Loading Section -->
-        <div id="loadingSection" class="loader-container glass-card" data-aos="zoom-in">
-            <div class="custom-spinner"></div>
-            <h3 class="mb-3">Scanning Database...</h3>
-            <p class="text-secondary mb-4">Finding the best matches for your criteria.</p>
-            <div class="progress mb-4">
-                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                    style="width: 0%"></div>
-            </div>
-            <div class="console-output text-start" id="consoleOutput"></div>
-        </div>
+        <!-- ── Main Results Area ── -->
+        <main class="results-main">
 
-        <!-- Results Section -->
-        <div id="resultsSection" class="results-section glass-card" data-aos="fade-up">
-            <div class="results-header">
-                <div>
-                    <span class="status-badge badge-success mb-2 d-inline-block">Search Complete</span>
-                    <h4 class="mb-0"><span id="resultsCount">0</span> Matches Found</h4>
-                </div>
-                <div class="d-flex gap-2">
-                    <button id="dummyEmailBtn" class="btn btn-download px-3" style="display: none;">
-                        <i class="bi bi-envelope-at me-2"></i>Test Email
-                    </button>
-                    <a id="downloadExcel" class="btn btn-primary btn-export" target="_blank">
-                        <span>Export</span>
-                        <i class="bi bi-arrow-down-circle-fill"></i>
-                    </a>
-                    <button class="btn btn-download" onclick="resetSearch()" title="Reset Search">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </button>
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon"><i class="bi bi-crosshair2"></i></div>
+                <div class="empty-title">Ready to find leads</div>
+                <div class="empty-sub">Set your filters on the left and run a search. Results will appear here with contact info ready to export.</div>
+                <div class="tip-chips">
+                    <div class="tip-chip"><strong>Seniority</strong> c_suite, vp, director</div>
+                    <div class="tip-chip"><strong>Industry</strong> Manufacturing, Automotive</div>
+                    <div class="tip-chip"><strong>Location</strong> India, Pune, Chennai</div>
+                    <div class="tip-chip"><strong>Size</strong> 51-200, 201-500</div>
                 </div>
             </div>
-            <div class="table-responsive p-3">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Company</th>
-                            <th>Contact Name</th>
-                            <th>Title</th>
-                            <th>Email</th>
-                            <th><i class="bi bi-linkedin me-2"></i>LinkedIn</th>
-                        </tr>
-                    </thead>
-                    <tbody id="previewTableBody">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+
+            <!-- Loading State -->
+            <div id="loadingSection" style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; padding:60px 40px;">
+                <div class="loader-ring"></div>
+                <div class="loader-title">Scanning database…</div>
+                <div class="loader-sub">Fetching contacts matching your criteria</div>
+                <div class="progress-wrap">
+                    <div id="progressBar" class="progress-bar" style="width:0%"></div>
+                </div>
+                <div class="console-output" id="consoleOutput"></div>
             </div>
-        </div>
+
+            <!-- Results -->
+            <div id="resultsSection" style="display:none; flex-direction:column; flex:1;">
+                <div class="results-toolbar">
+                    <div class="results-info">
+                        <div class="results-badge">
+                            <i class="bi bi-check-circle-fill text-success" style="color:var(--green)"></i>
+                            <span class="count" id="resultsCount">0</span>
+                            leads found
+                        </div>
+                        <span class="preview-note" id="pageInfo">Page 1</span>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button id="dummyEmailBtn" class="action-btn" style="display:none;">
+                            <i class="bi bi-envelope-at"></i> Test Email
+                        </button>
+                        <a id="downloadCsv" class="action-btn" target="_blank">
+                            <i class="bi bi-filetype-csv"></i> CSV
+                        </a>
+                        <a id="downloadExcel" class="action-btn primary" target="_blank">
+                            <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                        </a>
+                        <button class="action-btn reset" onclick="resetSearch()" title="New search">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="leads-table">
+                        <thead>
+                            <tr>
+                                <th style="width:32px;">#</th>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Title</th>
+                                <th>Email</th>
+                                <th><i class="bi bi-linkedin me-1"></i>LinkedIn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-bar" id="paginationBar">
+                    <button class="page-btn" id="pagePrev" onclick="changePage(currentPage - 1)">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <div id="pageButtons" style="display:flex;gap:6px;"></div>
+                    <button class="page-btn" id="pageNext" onclick="changePage(currentPage + 1)">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            easing: 'ease-out-quad',
-            once: true
+
+        // ── Apply form-control class to all Django inputs ──────────
+        document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => {
+            el.classList.add('filter-input');
         });
 
-        document.getElementById('searchForm').addEventListener('submit', async function (e) {
+        // ── Form Submit ────────────────────────────────────────────
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Show loading, hide results
-            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'flex';
             document.getElementById('resultsSection').style.display = 'none';
-            document.getElementById('consoleOutput').innerHTML = '<div class="text-info">>> Connecting to Apollo API...</div>';
+            document.getElementById('consoleOutput').innerHTML = '<span style="color:#64748b">&gt;&gt;</span> Connecting to data source...';
 
-            const formData = new FormData(this);
             const btn = document.getElementById('searchBtn');
-            const originalText = document.getElementById('btnText').textContent;
-
+            const origText = document.getElementById('btnText').textContent;
             btn.disabled = true;
-            document.getElementById('btnText').textContent = 'Processing...';
+            document.getElementById('btnText').textContent = 'Searching…';
+
+            let pct = 5;
+            const prog = setInterval(() => {
+                pct = Math.min(pct + Math.random() * 12, 88);
+                document.getElementById('progressBar').style.width = pct + '%';
+            }, 700);
 
             try {
-                const response = await fetch('/search/start/', {
+                const res = await fetch('/search/start/', {
                     method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                    }
+                    body: new FormData(this),
+                    headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
                 });
-
-                const data = await response.json();
+                const data = await res.json();
+                clearInterval(prog);
+                document.getElementById('progressBar').style.width = '100%';
 
                 if (data.status === 'success') {
-                    document.getElementById('loadingSection').style.display = 'none';
-                    document.getElementById('resultsSection').style.display = 'block';
-                    populateResults(data.data);
-                    // Refresh AOS for new elements
-                    AOS.refresh();
+                    setTimeout(() => {
+                        document.getElementById('loadingSection').style.display = 'none';
+                        document.getElementById('resultsSection').style.display = 'flex';
+                        populateResults(data.data);
+                    }, 300);
                 } else {
                     throw new Error(JSON.stringify(data.errors || data.error));
                 }
-            } catch (error) {
-                console.error('Search error:', error);
+            } catch (err) {
+                clearInterval(prog);
                 document.getElementById('consoleOutput').innerHTML +=
-                    `<div class="text-danger mt-2">❌ Error: ${error.message}</div>`;
-                alert('Search failed. Check console output.');
+                    `\n<span style="color:#ef4444">✕ Error: ${err.message}</span>`;
             } finally {
                 btn.disabled = false;
-                document.getElementById('btnText').textContent = originalText;
+                document.getElementById('btnText').textContent = origText;
             }
         });
 
+        // ── Pagination state ───────────────────────────────────────
+        let allRows = [];
+        let currentPage = 1;
+        const PAGE_SIZE = 20;
+
+        // ── Populate Results ───────────────────────────────────────
+        function populateResults(data) {
+            document.getElementById('resultsCount').textContent = data.results_count.toLocaleString();
+            document.getElementById('downloadExcel').href = data.excel_url;
+
+            const csvLink = document.getElementById('downloadCsv');
+            if (csvLink) csvLink.href = data.csv_url || data.excel_url;
+
+            const emailBtn = document.getElementById('dummyEmailBtn');
+            emailBtn.style.display = 'inline-flex';
+            emailBtn.onclick = sendDummyEmail;
+
+            allRows = data.preview_data;
+            currentPage = 1;
+            renderPage(currentPage);
+        }
+
+        function renderPage(page) {
+            const totalPages = Math.max(1, Math.ceil(allRows.length / PAGE_SIZE));
+            page = Math.max(1, Math.min(page, totalPages));
+            currentPage = page;
+
+            const start = (page - 1) * PAGE_SIZE;
+            const pageRows = allRows.slice(start, start + PAGE_SIZE);
+
+            const tbody = document.getElementById('previewTableBody');
+            tbody.innerHTML = '';
+            pageRows.forEach((row, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="row-num">${start + i + 1}</td>
+                    <td class="flexible company-cell">
+                        <div class="company-name">${row.Company || '—'}</div>
+                        <div class="company-ind">${row.Company_Industry || ''}</div>
+                    </td>
+                    <td class="person-name">${(row.Contact_First_Name || '') + ' ' + (row.Contact_Last_Name || '')}</td>
+                    <td><span class="title-pill">${row.Contact_Title || '—'}</span></td>
+                    <td>
+                        ${row.Contact_Email
+                            ? `<a href="mailto:${row.Contact_Email}" class="email-link"><i class="bi bi-envelope"></i>${row.Contact_Email}</a>`
+                            : '<span class="no-email">Not available</span>'}
+                    </td>
+                    <td>
+                        ${row.Contact_LinkedIn
+                            ? `<a href="${row.Contact_LinkedIn}" target="_blank" class="linkedin-btn"><i class="bi bi-linkedin"></i>View</a>`
+                            : '<span class="no-linkedin">—</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update page info
+            document.getElementById('pageInfo').textContent =
+                `Page ${page} of ${totalPages} · ${allRows.length} leads`;
+
+            // Prev / Next
+            document.getElementById('pagePrev').disabled = page === 1;
+            document.getElementById('pageNext').disabled = page === totalPages;
+
+            // Page number buttons (show up to 7 around current)
+            const btnContainer = document.getElementById('pageButtons');
+            btnContainer.innerHTML = '';
+            const range = pageRange(page, totalPages);
+            range.forEach(p => {
+                if (p === '…') {
+                    const span = document.createElement('span');
+                    span.className = 'page-info';
+                    span.textContent = '…';
+                    btnContainer.appendChild(span);
+                } else {
+                    const btn = document.createElement('button');
+                    btn.className = 'page-btn' + (p === page ? ' active' : '');
+                    btn.textContent = p;
+                    btn.onclick = () => changePage(p);
+                    btnContainer.appendChild(btn);
+                }
+            });
+        }
+
+        function changePage(page) {
+            renderPage(page);
+            document.querySelector('.table-wrap').scrollTop = 0;
+        }
+
+        function pageRange(current, total) {
+            if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+            if (current <= 4) return [1, 2, 3, 4, 5, '…', total];
+            if (current >= total - 3) return [1, '…', total-4, total-3, total-2, total-1, total];
+            return [1, '…', current-1, current, current+1, '…', total];
+        }
+
+        // ── Test Email ─────────────────────────────────────────────
         async function sendDummyEmail() {
             const btn = document.getElementById('dummyEmailBtn');
-            const originalContent = btn.innerHTML;
+            const orig = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
-
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:12px;height:12px;border-width:2px"></span> Sending…';
             try {
-                const response = await fetch('/search/dummy-email/', {
+                const res = await fetch('/search/dummy-email/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -622,91 +1002,45 @@
                     },
                     body: JSON.stringify({ test: true })
                 });
-
-                const data = await response.json();
-
+                const data = await res.json();
                 if (data.status === 'success') {
-                    document.getElementById('consoleOutput').innerHTML +=
-                        '<div class="text-success mt-2">✅ Dummy email test sent successfully!</div>';
-                    alert('✅ Dummy email sent to test list!');
+                    alert('✅ Test email sent successfully!');
                 } else {
                     throw new Error(data.error || 'Unknown error');
                 }
-            } catch (error) {
-                console.error('Dummy email error:', error);
-                alert('❌ Dummy email test failed.');
+            } catch (err) {
+                alert('❌ Email failed: ' + err.message);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = originalContent;
+                btn.innerHTML = orig;
             }
         }
 
-        function populateResults(data) {
-            document.getElementById('resultsCount').textContent = data.results_count;
-            document.getElementById('downloadExcel').href = data.excel_url;
-            document.getElementById('dummyEmailBtn').style.display = 'inline-block';
-            document.getElementById('dummyEmailBtn').onclick = sendDummyEmail;
-
-            const tbody = document.getElementById('previewTableBody');
-            tbody.innerHTML = '';
-
-            data.preview_data.forEach((row, index) => {
-                const tr = document.createElement('tr');
-                tr.setAttribute('data-aos', 'fade-up');
-                tr.setAttribute('data-aos-delay', index * 50);
-
-                tr.innerHTML = `
-                    <td class="wrap-cell">
-                        <div class="fw-bold">${row.Company || '-'}</div>
-                        <div class="text-secondary small">${row.Company_Industry || ''}</div>
-                    </td>
-                    <td>${row.Contact_First_Name || ''} ${row.Contact_Last_Name || ''}</td>
-                    <td><span class="badge bg-secondary opacity-75">${row.Contact_Title || '-'}</span></td>
-                    <td><a href="mailto:${row.Contact_Email}" class="text-info text-decoration-none">${row.Contact_Email}</a></td>
-                    <td>
-                        ${row.Contact_LinkedIn ?
-                        `<a href="${row.Contact_LinkedIn}" target="_blank" class="linkedin-link">
-                                <i class="bi bi-linkedin"></i> Profile
-                            </a>` :
-                        '<span class="text-muted small">Not Available</span>'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
+        // ── Reset ──────────────────────────────────────────────────
         function resetSearch() {
             document.getElementById('resultsSection').style.display = 'none';
             document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'flex';
             document.getElementById('searchForm').reset();
-            document.getElementById('searchBtn').disabled = false;
-            document.getElementById('btnText').textContent = 'Initiate Search';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('progressBar').style.width = '0%';
+            allRows = [];
+            currentPage = 1;
         }
 
-        // Theme Toggle Logic
-        const toggleSwitch = document.querySelector('#checkbox');
-        const currentTheme = localStorage.getItem('theme');
+        // ── Theme ──────────────────────────────────────────────────
+        const saved = localStorage.getItem('theme') || 'dark';
+        applyTheme(saved);
 
-        if (currentTheme) {
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            if (currentTheme === 'light') {
-                toggleSwitch.checked = true;
-            }
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        function applyTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            document.getElementById('themeIcon').className = t === 'dark' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
         }
-
-        function switchTheme(e) {
-            if (e.target.checked) {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        toggleSwitch.addEventListener('change', switchTheme, false);
     </script>
 </body>
-
 </html>
