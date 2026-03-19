@@ -43,7 +43,8 @@ from email.mime.multipart import MIMEMultipart
 
 @require_http_methods(["GET"])
 def credit_usage(request):
-    log_path = "media/credit_log.json"
+    from django.conf import settings
+    log_path = os.path.join(settings.MEDIA_ROOT, "credit_log.json")
     entries = []
     if os.path.exists(log_path):
         with open(log_path) as f:

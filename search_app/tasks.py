@@ -9,10 +9,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CREDIT_LOG = "media/credit_log.json"
+def _credit_log_path():
+    from django.conf import settings
+    return os.path.join(settings.MEDIA_ROOT, "credit_log.json")
 
 
 def _load_credit_log():
+    CREDIT_LOG = _credit_log_path()
     if os.path.exists(CREDIT_LOG):
         with open(CREDIT_LOG) as f:
             try:
@@ -23,10 +26,10 @@ def _load_credit_log():
 
 
 def _save_credit_entry(entry):
-    os.makedirs("media", exist_ok=True)
+    CREDIT_LOG = _credit_log_path()
+    os.makedirs(os.path.dirname(CREDIT_LOG), exist_ok=True)
     log = _load_credit_log()
     log.append(entry)
-    # keep last 500 entries
     with open(CREDIT_LOG, "w") as f:
         json.dump(log[-500:], f, indent=2)
 
@@ -199,13 +202,9 @@ def search_contacts_sync(search_params):
     })
 
     # ── Export ───────────────────────────────────────────────────────
-    download_dir = "media/downloads"
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-    else:
-        for f in os.listdir(download_dir):
-            try: os.remove(os.path.join(download_dir, f))
-            except: pass
+    from django.conf import settings
+    download_dir = os.path.join(settings.MEDIA_ROOT, "downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
     df = pd.DataFrame(results)
     df.to_csv(f"{download_dir}/contacts.csv", index=False)
