@@ -224,32 +224,43 @@ def search_contacts_sync(search_params):
         ("Total Fetched",   str(len(results))),
         ("Exported On",     time.strftime("%Y-%m-%d %H:%M:%S")),
     ]
-    df_filters = pd.DataFrame(filters_data[1:], columns=["Filter", "Value"])
-
     try:
-        from openpyxl.styles import Font, PatternFill, Alignment
-        with pd.ExcelWriter(f"{download_dir}/contacts.xlsx", engine="openpyxl") as writer:
-            df.to_excel(writer, sheet_name="Contacts", index=False)
-            df_filters.to_excel(writer, sheet_name="Search Filters", index=False)
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill
 
-            ws = writer.sheets["Search Filters"]
-            ws.column_dimensions["A"].width = 22
-            ws.column_dimensions["B"].width = 55
-            header_fill = PatternFill("solid", fgColor="0078D4")
-            header_font = Font(bold=True, color="FFFFFF")
-            for cell in ws[1]:
-                cell.fill = header_fill
-                cell.font = header_font
-                cell.alignment = Alignment(horizontal="left")
-            for row in ws.iter_rows(min_row=2):
-                row[0].font = Font(bold=True)
-                row[1].alignment = Alignment(wrap_text=True)
+        wb = openpyxl.Workbook()
+
+        # Sheet 1 — Contacts
+        ws1 = wb.active
+        ws1.title = "Contacts"
+        if not df.empty:
+            ws1.append(list(df.columns))
+            for row in df.itertuples(index=False):
+                ws1.append(list(row))
+            hfill = PatternFill("solid", fgColor="0078D4")
+            hfont = Font(bold=True, color="FFFFFF")
+            for cell in ws1[1]:
+                cell.fill = hfill
+                cell.font = hfont
+
+        # Sheet 2 — Search Filters
+        ws2 = wb.create_sheet("Search Filters")
+        ws2.column_dimensions["A"].width = 22
+        ws2.column_dimensions["B"].width = 55
+        ws2.append(["Filter", "Value"])
+        for cell in ws2[1]:
+            cell.fill = PatternFill("solid", fgColor="0078D4")
+            cell.font = Font(bold=True, color="FFFFFF")
+        for label, value in filters_data[1:]:
+            ws2.append([label, str(value)])
+            ws2.cell(row=ws2.max_row, column=1).font = Font(bold=True)
+
+        wb.save(f"{download_dir}/contacts.xlsx")
         print("✅ Excel export with Search Filters sheet done")
-    except Exception as e:
-        print(f"❌ Excel export error: {e}")
-        with pd.ExcelWriter(f"{download_dir}/contacts.xlsx", engine="openpyxl") as writer:
-            df.to_excel(writer, sheet_name="Contacts", index=False)
-            pd.DataFrame([{"Error": str(e)}]).to_excel(writer, sheet_name="Debug Error", index=False)
+    except Exception:
+        import traceback
+        print(f"❌ Excel export error: {traceback.format_exc()}")
+        df.to_excel(f"{download_dir}/contacts.xlsx", index=False)
 
     # ── Preview ──────────────────────────────────────────────────────
     preview_data = [
